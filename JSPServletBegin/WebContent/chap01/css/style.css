@@ -1,0 +1,8 @@
+@charset "UTF-8";
+
+div#today{
+	margin-top: 50px;
+	color: blue;
+	font-size: 15pt;
+	font-weight: bold;
+}
