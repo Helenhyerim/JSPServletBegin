@@ -17,7 +17,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>개인성향 데이터를 DB 로 전송하기</title>
+<title>개인성향 정보 수정하기</title>
 
 <style type="text/css">
 	ul{list-style-type: none;}
@@ -26,7 +26,48 @@
 
 <script type="text/javascript" src="<%=ctxPath%>/js/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
-	$(document).ready(function(){
+	$(document).ready(function() {
+		// 1. 성명 입력해주기
+		$("input#name").val("${requestScope.psdto.name}");
+		
+		// 2. 학력 입력해주기
+		$("select#school").val("${requestScope.psdto.school}");
+		
+		// 3. 색상 입력해주기
+		// const color = ${requestScope.psdto.color} //  ==> 는 오류이다. 문자일 경우가 있으므로
+		const color = "${requestScope.psdto.color}" //  ==> 는  정상이다.
+		// console.log("확인용 color =>" + color);
+		
+		$("input:radio[name=color]").each(function(index, item){
+			// console.log("확인용  value => " +$(item).attr("value")); // red  blue  green  yellow
+			
+			if( $(item).attr("value") == color){
+				$(item).prop("checked", true);
+			}
+			
+		});
+		
+		// 4. 음식 입력해주기
+		const food = "${requestScope.psdto.strFood}";
+		//	console.log("확인용 food => " + food);
+		// 확인용 food => 짜장면,탕수육,팔보채
+		// 확인용 food => 없음
+		
+		if(food != "없음") {
+			const arr_food = food.split(",");
+			//    arr_food ==> ["짜장면","탕수육","팔보채"];
+			
+			arr_food.forEach(function(item, index, array){
+				
+				$("input:checkbox[name='food']").each(function(idx, elt){
+					if(item == $(elt).attr("value") ) {
+						$(elt).prop("checked",true);
+						return false;  // for 문의 break; 와 같은 뜻이다.
+					}
+				}); // end of $("input:checkbox[name='food']").each()---------------------- 
+				
+			}); // end of arr_food.forEach()-----------------------------------------------
+		}
 		
 		// === 유효성 검사하기 시작 === //
 		$("form[name='myFrm']").submit(function(){
@@ -58,19 +99,20 @@
 		*/
 		});
 		// === 유효성 검사하기 끝 === //
-		
-	});// end of $(document).ready(function() -----------
-
+	});
 </script>
+
 </head>
 <body>
 
-	<form name="myFrm" action="<%= ctxPath%>/personRegister.do" method="post">
+	<form name="myFrm" action="<%= ctxPath%>/personUpdateEnd.do" method="post">
 		<fieldset>
-			<legend>개인성향 데이터를 DB 로 전송하기</legend>
+			<legend>${requestScope.psdto.name}님 성향 정보 수정하기</legend>
 			<ul>
-				<li><label for="name">성명</label> 
-					<input type="text" name="name" id="name" placeholder="성명입력" />
+				<li>
+					<input type="hidden" name="seq" value="${requestScope.psdto.seq }" readonly/>
+					<label for="name">성명</label> 
+					<input type="text" name="name" id="name" placeholder="성명입력"/>
 				</li>
 				
 				<li><label for="school">학력</label> 
@@ -118,7 +160,7 @@
 					</div>
 				</li>
 				<li>
-					<input type="submit" value="전송" /> 
+					<input type="submit" value="수정" /> 
 					<input type="reset" value="취소" />
 				</li>
 			</ul>
